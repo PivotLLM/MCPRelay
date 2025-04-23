@@ -1,9 +1,11 @@
+// Copyright (c) 2025 Tenebris Technologies Inc.
+// Please see LICENSE for details.
+
 package relay
 
 import (
 	"bufio"
 	"bytes"
-	//"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -102,9 +104,6 @@ func (r *Relay) Run() {
 			continue
 		}
 
-		// Log the bytes in hex
-		//r.logger.Println("Hex from client:\n" + hex.Dump([]byte(line)))
-
 		// Trim whitespace and newlines
 		line = strings.TrimSpace(line)
 
@@ -135,7 +134,8 @@ func (r *Relay) Run() {
 					continue
 				}
 
-				/*
+				/* TODO - in non-SEE mode, the body would have to be parsed, JSON extracted, and forwarded to the client
+				   But in SSE mode, the results in the client receiving two responses and getting confused
 
 					// Read the response body and immediately close it
 					var respBody []byte
@@ -146,10 +146,6 @@ func (r *Relay) Run() {
 						r.logger.Println(msg)
 						r.sendClientError(msg)
 						continue
-					}
-
-					if r.debug {
-						r.logger.Printf("Server response: %s", string(respBody))
 					}
 
 					// Relay the response back to the MCP client
@@ -174,9 +170,6 @@ func (r *Relay) sendToClient(msg []byte) {
 
 	// Trim whitespace and newlines
 	msg = bytes.TrimRight(bytes.TrimRight(msg, "\r\n\t "), "\r\n\t ")
-
-	// Log the bytes in hex
-	//r.logger.Println("Hex to client:\n" + hex.Dump(msg))
 
 	// Set our mutex to avoid conflicts writing to stdout
 	r.writerMutex.Lock()

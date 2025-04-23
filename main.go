@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Tenebris Technologies Inc.
+// Please see LICENSE for details.
+
 package main
 
 import (
@@ -62,5 +65,6 @@ func main() {
 	// This will block until the client disconnects
 	r.Run()
 
+	// Log exit
 	logger.Printf("%s exiting", PRODUCT)
 }
