@@ -4,6 +4,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"io"
 	"log"
@@ -23,7 +24,16 @@ func main() {
 	logFilePath := flag.String("log", "", "Path to the log file (leave empty to disable logging)")
 	sseURL := flag.String("url", "http://127.0.0.1:8888/sse", "URL to connect to SSE stream")
 	debugFlag := flag.Bool("debug", false, "Enable debug logging")
+	headersJSON := flag.String("headers", "", "Custom HTTP headers as JSON object (e.g., '{\"Authorization\":\"Bearer token\"}')")
 	flag.Parse()
+
+	// Parse custom headers if provided
+	var headers map[string]string
+	if *headersJSON != "" {
+		if err := json.Unmarshal([]byte(*headersJSON), &headers); err != nil {
+			log.Fatalf("Failed to parse headers JSON: %s", err)
+		}
+	}
 
 	// Set the default logger to discard
 	log.SetOutput(io.Discard)
@@ -56,7 +66,7 @@ func main() {
 	}
 
 	// Instantiate the relay
-	r, err := relay.New(*sseURL, logger, *debugFlag)
+	r, err := relay.New(*sseURL, logger, logFile, *debugFlag, headers)
 	if err != nil {
 		logger.Fatalf("Failed to create relay: %s", err.Error())
 	}
