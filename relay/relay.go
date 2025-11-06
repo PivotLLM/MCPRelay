@@ -1,5 +1,7 @@
-// Copyright (c) 2025 Tenebris Technologies Inc.
-// Please see LICENSE for details.
+/******************************************************************************
+ * Copyright (c) 2025 Tenebris Technologies Inc.                              *
+ * See LICENSE for details.                                                   *
+ ******************************************************************************/
 
 package relay
 
