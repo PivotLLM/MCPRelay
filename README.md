@@ -1,6 +1,8 @@
 # MCPRelay
 MCPRelay allows MCP clients that only support stdio to connect to network MCP servers using SSE transport. Note that non-SSE HTTP servers are not yet supported.
 
+It was originally developed to address desktop AI clients with missing or limited network MCP capabilities.
+
 ## Command-line Options
 - `-url`: URL to connect to SSE stream (default: `http://127.0.0.1:8888/sse`)
 - `-log`: Path to the log file (leave empty to disable logging)
