@@ -1,21 +1,46 @@
 # MCPRelay
-MCPRelay allows MCP clients that only support stdio to connect to network MCP servers using SSE transport. Note that non-SSE HTTP servers are not yet supported.
+MCPRelay allows MCP clients that only support stdio to connect to network MCP servers using either HTTP or SSE transport.
 
 It was originally developed to address desktop AI clients with missing or limited network MCP capabilities.
 
 ## Command-line Options
-- `-url`: URL to connect to SSE stream (default: `http://127.0.0.1:8888/sse`)
+- `-url`: URL to connect to (default: `http://127.0.0.1:8888/sse`)
+  - For HTTP mode: POST endpoint (e.g., `http://127.0.0.1:9999/mcp`)
+  - For SSE mode: SSE stream endpoint (e.g., `http://127.0.0.1:8888/sse`)
+- `-transport`: Transport mode - `http` or `sse` (default: `http`)
 - `-log`: Path to the log file (leave empty to disable logging)
 - `-debug`: Enable debug logging
 - `-headers`: Custom HTTP headers as JSON object (e.g., `'{"Authorization":"Bearer token"}'`)
 
-### Example configuration for Claude desktop:
+### Example configuration for HTTP transport (Claude desktop):
 ```
 {
   "mcpServers": {
     "Fusion": {
       "command": "/opt/mcprelay/mcprelay",
       "args": [
+        "-url",
+        "http://127.0.0.1:9999/mcp",
+        "-headers",
+        "{\"Authorization\":\"Bearer <token>\"}",
+        "-log",
+        "/opt/mcprelay/relay-fusion.log",
+        "-debug"
+      ]
+    }
+  }
+}
+```
+
+### Example configuration for SSE transport (Claude desktop):
+```
+{
+  "mcpServers": {
+    "Fusion": {
+      "command": "/opt/mcprelay/mcprelay",
+      "args": [
+        "-transport",
+        "sse",
         "-url",
         "http://127.0.0.1:8888/sse",
         "-headers",
@@ -29,7 +54,7 @@ It was originally developed to address desktop AI clients with missing or limite
 }
 ```
 
-### Example configuration for Cline:
+### Example configuration for Cline (HTTP mode):
 ```
 {
   "mcpServers": {
@@ -39,40 +64,22 @@ It was originally developed to address desktop AI clients with missing or limite
       "command": "/opt/MCPRelay/mcprelay",
       "args": [
         "-url",
-        "http://127.0.0.1:8888/sse",
+        "http://127.0.0.1:9999/mcp",
         "-log",
         "/tmp/relay.log",
         "-debug"
-      ]
+      ],
       "transportType": "stdio"
     }
   }
 }
 ```
 
-### Example with bearer token and custom header:
-```
-{
-  "mcpServers": {
-    "ServerWithAuth": {
-      "command": "/opt/MCPRelay/mcprelay",
-      "args": [
-        "-url",
-        "http://127.0.0.1:8888/sse",
-        "-headers",
-        "{\"Authorization\":\"Bearer your-token-here\",\"X-Custom-Header\":\"value\"}",
-        "-log",
-        "/tmp/relay.log"
-      ]
-    }
-  }
-}
-```
-
 ### NOTES:
-- Specify the URL to the SSE endpoint. The server will tell MCPRelay, acting as a client, what URL to POST requests to.
-- Multiple instances are perfectly fine. Your MCP server will start a separate instance of each and communicate with it over stdin/stdout. You may wish to specify a different log file for each instance.
-- All arguments are optional. If you don't specify an endpoint, it will default to `http://127.0.0.1:8888/sse`.
+- **HTTP mode (default)**: Specify the POST endpoint URL. Each message is sent via POST and receives an immediate response. This is the modern, stateless transport.
+- **SSE mode**: Specify the SSE stream URL with `-transport sse`. The server will tell MCPRelay what URL to POST requests to via dynamic endpoint discovery.
+- Multiple instances are perfectly fine. Your MCP client will start a separate instance and communicate with it over stdin/stdout. You may wish to specify a different log file for each instance.
+- All arguments are optional. Default transport is `http` and default URL is `http://127.0.0.1:8888/sse`.
 - Custom headers specified with `-headers` will be sent with every HTTP request (both SSE connections and POST requests).
 
 ## Copyright and License

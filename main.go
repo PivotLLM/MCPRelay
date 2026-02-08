@@ -15,7 +15,7 @@ import (
 	"github.com/PivotLLM/MCPRelay/relay"
 )
 
-const PRODUCT = "MCPRelay v0.2.0"
+const PRODUCT = "MCPRelay v0.4.0"
 
 func main() {
 	var err error
@@ -27,7 +27,13 @@ func main() {
 	sseURL := flag.String("url", "http://127.0.0.1:8888/sse", "URL to connect to SSE stream")
 	debugFlag := flag.Bool("debug", false, "Enable debug logging")
 	headersJSON := flag.String("headers", "", "Custom HTTP headers as JSON object (e.g., '{\"Authorization\":\"Bearer token\"}')")
+	transport := flag.String("transport", "http", "Transport mode: 'http' or 'sse'")
 	flag.Parse()
+
+	// Validate transport mode
+	if *transport != "http" && *transport != "sse" {
+		log.Fatalf("Invalid transport mode: %s (must be 'http' or 'sse')", *transport)
+	}
 
 	// Parse custom headers if provided
 	var headers map[string]string
@@ -68,7 +74,7 @@ func main() {
 	}
 
 	// Instantiate the relay
-	r, err := relay.New(*sseURL, logger, logFile, *debugFlag, headers)
+	r, err := relay.New(*sseURL, logger, logFile, *debugFlag, headers, *transport)
 	if err != nil {
 		logger.Fatalf("Failed to create relay: %s", err.Error())
 	}
