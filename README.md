@@ -84,7 +84,7 @@ It was originally developed to address desktop AI clients with missing or limite
 
 ## Copyright and License
 
-Copyright (c) 2025 by Tenebris Technologies Inc. and available for use under Apache License 2.0. Please see the LICENSE file for full information.
+Copyright (c) 2025-2026 by Tenebris Technologies Inc. This software is licensed under the MIT License. Please see LICENSE for details.
 
 ## Trademarks
 
